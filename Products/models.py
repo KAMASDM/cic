@@ -1,7 +1,7 @@
 from django.db import models
 from Master.models import Product_Category
 from django.contrib.auth.models import User
-
+from django.conf import settings
 class Products(models.Model):
     Product_name = models.CharField(max_length=100)
     Product_status = models.BooleanField(default=True)
@@ -13,6 +13,6 @@ class Products(models.Model):
     Product_Specification = models.TextField()
     Product_description = models.CharField(max_length=100)
 
-    Product_Assigned_User = models.ForeignKey(User, on_delete=models.CASCADE)
+    Product_Assigned_User = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     Product_created_at = models.DateTimeField(auto_now_add=True)

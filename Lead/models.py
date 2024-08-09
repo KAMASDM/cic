@@ -1,8 +1,7 @@
-from django.contrib.auth.models import User
 from django.db import models
 from Master.models import Lead_Source, Lead_Status, Industry_Type as Lead_Industry, Client_Type, lead_Followup_Status
 from Products.models import Products
-
+from django.conf import settings
 class Lead(models.Model):
     First_name = models.CharField(max_length=100)
     Last_name = models.CharField(max_length=100)
@@ -21,6 +20,6 @@ class Lead(models.Model):
     Lead_Followup_Status = models.ForeignKey(lead_Followup_Status, on_delete=models.CASCADE)
     Products = models.ManyToManyField(Products, blank=True)
     Notes = models.TextField()
-    Assigned_to = models.ForeignKey(User, on_delete=models.CASCADE)
+    Assigned_to = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     created_at = models.DateTimeField(auto_now_add=True)
