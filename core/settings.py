@@ -31,7 +31,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
-    # 'jazzmin',
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -102,10 +102,10 @@ JAZZMIN_SETTINGS = {
     "site_brand": "CIC CRM",
 
     # Logo to use for your site, must be present in static files, used for brand on top left
-    #"site_logo": "books/img/logo.png",
+    "site_logo": "images/cic_logo.jpeg",
 
     # Logo to use for your site, must be present in static files, used for login form logo (defaults to site_logo)
-    "login_logo": None,
+    "login_logo": 'images/cic_logo.jpeg',
 
     # Logo to use for login form in dark themes (defaults to login_logo)
     "login_logo_dark": None,
@@ -325,7 +325,12 @@ CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 30 * 60
 
 MEDIA_ROOT = BASE_DIR / 'media'
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
 CELERY_BROKER_URL = 'amqp://admin:admin@localhost:5672/'
 CELERY_BEAT_SCHEDULER = 'redbeat.RedBeatScheduler'
 
 redbeat_redis_url = "redis://localhost:6379/1"
+
+CKEDITOR_CONFIGS = {"default": {"versionCheck": False}}

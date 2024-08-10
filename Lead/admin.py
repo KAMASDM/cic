@@ -116,7 +116,7 @@ class LeadAdmin(ImportExportModelAdmin):
 
                     DelayedEvent.objects.create(
                         event_type="client_reminder",
-                        due_date=timezone.now() + timedelta(minutes=i),
+                        due_date=timezone.now() + timedelta(days=i),
                         data={
                             "email_data": {
                                 "from": user.from_email,
