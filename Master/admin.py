@@ -2,6 +2,7 @@ from django.contrib import admin
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin
 from .models import (
+    EmailTemplateCategory,
     Lead_Source,
     Industry_Type,
     Lead_Status,
@@ -79,3 +80,7 @@ admin.site.register(Lead_Status, LeadStatusAdmin)
 admin.site.register(Client_Type, ClientTypeAdmin)
 admin.site.register(lead_Followup_Status, LeadFollowupStatusAdmin)
 admin.site.register(Product_Category, ProductCategoryAdmin)
+
+@admin.register(EmailTemplateCategory)
+class EmailTemplateCategoryAdmin(admin.ModelAdmin):
+    pass

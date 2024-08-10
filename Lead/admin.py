@@ -1,38 +1,86 @@
+from typing import Any
 from django.contrib import admin
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin
 from .models import Lead
+
 
 # Define the resource for import/export
 class LeadResource(resources.ModelResource):
     class Meta:
         model = Lead
 
+
 # Define the admin class with search, filter, and fieldsets capabilities
 class LeadAdmin(ImportExportModelAdmin):
     resource_class = LeadResource
-    list_display = ('First_name', 'Last_name', 'Company_name', 'Primary_phone', 'Primary_Email', 'Lead_Source', 'Lead_Status', 'Lead_Industry', 'Client_Type', 'created_at')
-    search_fields = ('First_name', 'Last_name', 'Company_name', 'Primary_phone', 'Primary_Email')
-    list_filter = ('Lead_Source', 'Lead_Status', 'Lead_Industry', 'Client_Type', 'created_at')
-    filter_horizontal = ('Products',)
-    ordering = ('-created_at',)
+    list_display = (
+        "first_name",
+        "last_name",
+        "company_name",
+        "primary_phone",
+        "primary_email",
+        "lead_source",
+        "lead_status",
+        "lead_Industry",
+        "client_type",
+        "created_at",
+    )
+    search_fields = (
+        "first_name",
+        "last_name",
+        "company_name",
+        "primary_phone",
+        "primary_email",
+    )
+    list_filter = (
+        "lead_source",
+        "lead_status",
+        "lead_Industry",
+        "client_type",
+        "created_at",
+    )
+    filter_horizontal = ("products",)
+    ordering = ("-created_at",)
 
     fieldsets = (
-        ('Personal Information', {
-            'fields': ('First_name', 'Last_name')
-        }),
-        ('Company Information', {
-            'fields': ('Company_name', 'Company_website')
-        }),
-        ('Contact Information', {
-            'fields': ('Primary_phone', 'Mobile_phone', 'Primary_Email', 'Secondary_Email')
-        }),
-        ('Lead Details', {
-            'fields': ('Lead_location', 'Lead_Source', 'Lead_Status', 'Lead_Industry', 'Client_Type', 'Lead_Followup_Status','Assigned_to', 'Products', 'Notes')
-        }),
+        ("Personal Information", {"fields": ("first_name", "last_name")}),
+        ("Company Information", {"fields": ("company_name", "company_website")}),
+        (
+            "Contact Information",
+            {
+                "fields": (
+                    "primary_phone",
+                    "mobile_phone",
+                    "primary_email",
+                    "secondary_email",
+                )
+            },
+        ),
+        (
+            "Lead Details",
+            {
+                "fields": (
+                    "lead_location",
+                    "lead_source",
+                    "lead_status",
+                    "lead_Industry",
+                    "client_type",
+                    "lead_followup_status",
+                    "assigned_to",
+                    "products",
+                    "notes",
+                )
+            },
+        ),
     )
 
-    readonly_fields = ('created_at',)
+    readonly_fields = ("created_at",)
 
-# Register the model with the admin site
+    def save_model(self, request: Any, obj: Any, form: Any, change: bool) -> None:
+        if not change:
+            obj.created_by = request.user
+        return super().save_model(request, obj, form, change)
+
+
 admin.site.register(Lead, LeadAdmin)

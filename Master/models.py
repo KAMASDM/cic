@@ -38,6 +38,6 @@ class Product_Category(models.Model):
         return self.category_name
 
 
-
-
+class EmailTemplateCategory(models.Model):
+    category = models.CharField(max_length=50)
 
