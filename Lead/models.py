@@ -1,5 +1,4 @@
 from django.db import models
-from django.dispatch import receiver
 from Master.models import (
     Lead_Source,
     Lead_Status,
@@ -9,8 +8,6 @@ from Master.models import (
 )
 from Products.models import Products
 from django.conf import settings
-from email_templates.tasks import send_welcome_email
-from django.db.models.signals import post_save
 
 
 class Lead(models.Model):
@@ -34,19 +31,24 @@ class Lead(models.Model):
     products = models.ManyToManyField(Products, blank=True)
     notes = models.TextField()
     assigned_to = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="+"
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="+",null=True, blank=True
     )
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True
     )
 
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
 
-@receiver(post_save, sender=Lead)
-def post_save_receiver(sender, created, instance, **kwargs):
-    if created:
-        send_welcome_email.delay(
-            to=[instance.primary_email, instance.secondary_email],
-            user_id=instance.created_by.id,
-        )
+
+# @receiver(post_save, sender=Lead)
+# def send_email_on_lead_status_change(sender, created, instance:Lead, **kwargs):
+#     if instance.lead_status == 'Welcome Email Sent':
+#         pass
+        
+#     instance.save() 
+#     send_welcome_email.delay(
+#         to=[instance.primary_email, instance.secondary_email],
+#         user_id=instance.created_by.id,
+#     )

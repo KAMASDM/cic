@@ -1,8 +1,10 @@
+from cgi import print_arguments
 from typing import Any
 from django.contrib import admin
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin
 from .models import Lead
+from email_templates.tasks import send_email_after_welcome_email
 
 
 # Define the resource for import/export
@@ -73,13 +75,38 @@ class LeadAdmin(ImportExportModelAdmin):
                 )
             },
         ),
+        (
+            "Meta Information",
+            {
+                "fields": (
+                    "created_at",
+                    "updated_at",
+                    "created_by",
+                )
+            },
+        ),
     )
 
-    readonly_fields = ("created_at",)
+    readonly_fields = (
+        "created_at",
+        "updated_at",
+        "created_by",
+    )
 
     def save_model(self, request: Any, obj: Any, form: Any, change: bool) -> None:
         if not change:
             obj.created_by = request.user
+
+        if change:
+            # print(form.cleaned_data.get("lead_status").status_name)
+            changed_fields = form.changed_data
+            if (
+                "lead_status" in changed_fields
+                and form.cleaned_data.get("lead_status").status_name
+                == "Welcome Email Received"
+            ):
+                send_email_after_welcome_email.delay(lead_id=obj.id)
+
         return super().save_model(request, obj, form, change)
 
 
