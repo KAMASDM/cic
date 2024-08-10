@@ -3,6 +3,7 @@ from django.core.mail.backends.smtp import EmailBackend
 from django.core.mail import EmailMultiAlternatives
 from user.models import User
 from django.utils.html import strip_tags
+from typing import Optional
 
 
 class DynamicEmailBackend(EmailBackend):
@@ -10,13 +11,22 @@ class DynamicEmailBackend(EmailBackend):
         super().__init__(**config, **kwargs)
 
 
-def dynamic_send_email(subject: str, body, to: list, user: User, **kwargs):
-    config = {
-        "host": user.email_host,
-        "port": user.email_port,
-        "username": user.email_username,
-        "password": user.email_password,
-    }
+def dynamic_send_email(
+    subject: str,
+    body,
+    to: list,
+    from_email: str | None = None,
+    user: User | None = None,
+    config: dict | None = None,
+    **kwargs,
+):
+    if user:
+        config = {
+            "host": user.email_host,
+            "port": user.email_port,
+            "username": user.email_username,
+            "password": user.email_password,
+        }
     backend = DynamicEmailBackend(config)
 
     # Create plain-text content
@@ -28,7 +38,7 @@ def dynamic_send_email(subject: str, body, to: list, user: User, **kwargs):
     email = EmailMultiAlternatives(
         subject=subject,
         body=plain_text_content,
-        from_email=user.from_email,
+        from_email=user.from_email if user else from_email,
         to=to,
         connection=backend,
     )

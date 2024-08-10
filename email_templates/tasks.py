@@ -18,7 +18,7 @@ def send_welcome_email(self, to:list, user_id:int):
                        )
                        
 @shared_task(bind=True)
-def send_email_after_welcome_email(self, lead_id:int):
+def send_product_questionaire_email(self, lead_id:int):
     """This sends emails of all the products that are in a lead.
 
     Args:
@@ -41,3 +41,6 @@ def send_email_after_welcome_email(self, lead_id:int):
                         )
     
     # user_obj= User.objects.get(id = user_id)
+    
+    
+def create_reminders_for_questionaire_reply(self):...

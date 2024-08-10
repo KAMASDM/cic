@@ -1,10 +1,14 @@
-from cgi import print_arguments
+from datetime import timedelta
 from typing import Any
 from django.contrib import admin
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin
+
+from user.models import User
 from .models import Lead
-from email_templates.tasks import send_email_after_welcome_email
+from email_templates.tasks import send_product_questionaire_email
+from Master.models import DelayedEvent
+from django.utils import timezone
 
 
 # Define the resource for import/export
@@ -93,19 +97,41 @@ class LeadAdmin(ImportExportModelAdmin):
         "created_by",
     )
 
-    def save_model(self, request: Any, obj: Any, form: Any, change: bool) -> None:
+    def save_model(self, request: Any, obj: Lead, form: Any, change: bool) -> None:
         if not change:
             obj.created_by = request.user
 
         if change:
-            # print(form.cleaned_data.get("lead_status").status_name)
             changed_fields = form.changed_data
             if (
                 "lead_status" in changed_fields
                 and form.cleaned_data.get("lead_status").status_name
                 == "Welcome Email Received"
             ):
-                send_email_after_welcome_email.delay(lead_id=obj.id)
+                send_product_questionaire_email.delay(lead_id=obj.id)
+
+                user: User = obj.assigned_to
+
+                for i in [2, 4, 8, 12]:
+
+                    DelayedEvent.objects.create(
+                        event_type="client_reminder",
+                        due_date=timezone.now() + timedelta(minutes=i),
+                        data={
+                            "email_data": {
+                                "from": user.from_email,
+                                "subject": "Reminder!",
+                                "body": "This is a reminder for your reply.",
+                                "to": [obj.primary_email, obj.secondary_email],
+                            },
+                            "config": {
+                                "password": user.email_password,
+                                "Username": user.email_username,
+                                "port": user.email_port,
+                                "host": user.email_host,
+                            },
+                        },
+                    )
 
         return super().save_model(request, obj, form, change)
 

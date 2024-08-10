@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'user',
     "django_extensions",
     "ckeditor",
+    "django_celery_beat",
 ]
 CELERY_RESULT_BACKEND = 'django-db'
 MIDDLEWARE = [
@@ -286,7 +287,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Kolkata'
 
 USE_I18N = True
 
@@ -314,6 +315,7 @@ EMAIL_PORT = 1025
 EMAIL_HOST_USER = ''
 EMAIL_HOST_PASSWORD = ''
 EMAIL_USE_TLS = False
+
 CELERY_RESULT_EXTENDED = True
 CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 CELERY_ACCEPT_CONTENT = ['json']
@@ -323,3 +325,7 @@ CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 30 * 60
 
 MEDIA_ROOT = BASE_DIR / 'media'
+CELERY_BROKER_URL = 'amqp://admin:admin@localhost:5672/'
+CELERY_BEAT_SCHEDULER = 'redbeat.RedBeatScheduler'
+
+redbeat_redis_url = "redis://localhost:6379/1"

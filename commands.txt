@@ -1,1 +1,3 @@
 celery -A core.celery worker -l INFO
+celery -A core.celery worker --beat --scheduler redbeat.RedBeatScheduler --loglevel=info
+uv pip freeze | uv pip compile - -o requirements.txt

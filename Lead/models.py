@@ -39,16 +39,3 @@ class Lead(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
-
-
-# @receiver(post_save, sender=Lead)
-# def send_email_on_lead_status_change(sender, created, instance:Lead, **kwargs):
-#     if instance.lead_status == 'Welcome Email Sent':
-#         pass
-        
-#     instance.save() 
-#     send_welcome_email.delay(
-#         to=[instance.primary_email, instance.secondary_email],
-#         user_id=instance.created_by.id,
-#     )
